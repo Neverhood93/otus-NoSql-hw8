@@ -12,10 +12,9 @@ namespace Otus.Teaching.Pcf.GivingToCustomer.DataAccess.Repositories
     {
         private readonly IMongoCollection<T> _collection;
 
-        public MongoRepository(MongoContext context, IMongoDatabase database)
+        public MongoRepository(IMongoDatabase database)
         {
             var collectionName = typeof(T).Name + "s";
-            //_collection = context.GetCollection<T>(collectionName);
             _collection = database.GetCollection<T>(collectionName);
         }
 

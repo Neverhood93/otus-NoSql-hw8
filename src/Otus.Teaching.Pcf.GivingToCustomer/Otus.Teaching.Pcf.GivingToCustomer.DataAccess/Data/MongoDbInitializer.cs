@@ -28,8 +28,8 @@ namespace Otus.Teaching.Pcf.GivingToCustomer.DataAccess.Data
             _database.CreateCollectionAsync("Customers");
             _database.CreateCollectionAsync("Preferences");
 
-            _preferenceRepository.AddRangeAsync(FakeDataFactory.Preferences);
             _customerRepository.AddRangeAsync(FakeDataFactory.Customers);
+            _preferenceRepository.AddRangeAsync(FakeDataFactory.Preferences);            
         }
     }
 }
