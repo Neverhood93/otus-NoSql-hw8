@@ -17,6 +17,7 @@ using Otus.Teaching.Pcf.GivingToCustomer.DataAccess.Data;
 using Otus.Teaching.Pcf.GivingToCustomer.DataAccess.Repositories;
 using Otus.Teaching.Pcf.GivingToCustomer.Integration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using MongoDB.Driver;
 
 namespace Otus.Teaching.Pcf.GivingToCustomer.WebHost
 {
@@ -35,16 +36,37 @@ namespace Otus.Teaching.Pcf.GivingToCustomer.WebHost
         {
             services.AddControllers().AddMvcOptions(x=> 
                 x.SuppressAsyncSuffixInActionNames = false);
-            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-            services.AddScoped<INotificationGateway, NotificationGateway>();
-            services.AddScoped<IDbInitializer, EfDbInitializer>();
-            services.AddDbContext<DataContext>(x =>
+            //services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            
+            services.AddSingleton<IMongoClient, MongoClient>(sp =>
             {
-                //x.UseSqlite("Filename=PromocodeFactoryGivingToCustomerDb.sqlite");
-                x.UseNpgsql(Configuration.GetConnectionString("PromocodeFactoryGivingToCustomerDb"));
-                x.UseSnakeCaseNamingConvention();
-                x.UseLazyLoadingProxies();
+                var connectionString = Configuration.GetSection("MongoDbSettings:ConnectionString").Value;
+                return new MongoClient(connectionString);
             });
+
+            services.AddScoped<IMongoDatabase>(sp =>
+            {
+                var client = sp.GetRequiredService<IMongoClient>();
+                var databaseName = Configuration.GetSection("MongoDbSettings:DatabaseName").Value;
+                return client.GetDatabase(databaseName);
+            });
+
+            services.AddSingleton<MongoContext>();
+
+            services.AddScoped(typeof(IRepository<>), typeof(MongoRepository<>));
+            services.AddTransient<IDbInitializer, MongoDbInitializer>();
+
+
+
+            services.AddScoped<INotificationGateway, NotificationGateway>();
+            //services.AddScoped<IDbInitializer, EfDbInitializer>();
+            //services.AddDbContext<DataContext>(x =>
+            //{
+            //    //x.UseSqlite("Filename=PromocodeFactoryGivingToCustomerDb.sqlite");
+            //    x.UseNpgsql(Configuration.GetConnectionString("PromocodeFactoryGivingToCustomerDb"));
+            //    x.UseSnakeCaseNamingConvention();
+            //    x.UseLazyLoadingProxies();
+            //});
 
             services.AddOpenApiDocument(options =>
             {

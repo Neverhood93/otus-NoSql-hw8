@@ -57,6 +57,11 @@ namespace Otus.Teaching.Pcf.GivingToCustomer.DataAccess.Repositories
             await _dataContext.SaveChangesAsync();
         }
 
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _dataContext.AddRangeAsync(entities);
+        }
+
         public async Task UpdateAsync(T entity)
         {
             await _dataContext.SaveChangesAsync();
