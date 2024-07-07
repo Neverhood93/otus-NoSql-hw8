@@ -22,6 +22,8 @@ namespace Otus.Teaching.Pcf.GivingToCustomer.Core.Abstractions.Repositories
 
         Task AddAsync(T entity);
 
+        Task AddRangeAsync(IEnumerable<T> entities);
+
         Task UpdateAsync(T entity);
 
         Task DeleteAsync(T entity);
